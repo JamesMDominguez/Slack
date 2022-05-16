@@ -1,0 +1,57 @@
+.sidebar {
+    position: fixed;
+    width: 20%;
+    height: 100vh;
+    font-size: 0.65em;
+    background-color: #ebeae9;
+    border-style: solid;
+    border-width: 2px;
+    border-top: none;
+    border-bottom: none;
+    display: inline-block;
+  }
+  
+.sidebarItem{
+    margin: 6%;
+}
+
+.sidebarItem> p:hover{
+    background-color: rgb(206, 206, 206);
+}
+
+.sidebarItem> p{
+    padding: 10px;
+    border-radius: 15px;
+    border: solid;
+    border-width: 1px;
+    text-align: center;
+}
+#overlay {
+    position: fixed;
+    display: block;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 2;
+    cursor: pointer;
+  }
+  
+  #text{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 60%;
+    transform: translate(-50%,-50%);
+    -ms-transform: translate(-50%,-50%);
+    background-color: #e4e4e4;
+    padding: 20px;
+    border-radius: 10px;
+  }
+
+  .emailList:hover{
+      background-color: #c4c4c4;
+  }
