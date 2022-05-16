@@ -1,19 +1,20 @@
 import React, { useEffect, useState, useContext } from "react";
-import { Link } from "react-router-dom";
 import {UserContext} from "/Users/admin/Desktop/Slack/client/src/App.js"
+import { useAuth0 } from "@auth0/auth0-react";
 
 import "./style.css"
 const Record = (props) => (
  <>
-   <p>{props.record.name} {props.record.position} {props.record.level}</p>
+   <p>{props.record.message} {props.record.user}</p>
  </>
 );
  
 export default function RecordList(){
- const [records, setRecords] = useState([]);
- const user = useContext(UserContext);
- console.log(user.selectedGroup)
- // This method fetches the records from the database.
+ const [records, setRecords] = useState([])
+ const selectedGroup = useContext(UserContext)
+ const [message,setMessage] = useState("")
+ const { user,isAuthenticated } = useAuth0();
+
  useEffect(() => {
    async function getRecords() {
      const response = await fetch(`http://localhost:5000/record/`);
@@ -32,10 +33,24 @@ export default function RecordList(){
  
    return;
  }, [records.length])
- 
 
+
+ async function onSubmit(e) {
+  setRecords(()=>[...records,{message:message,user:user.email,groupID:selectedGroup.selectedGroup}])
+  e.preventDefault();
+  await fetch("http://localhost:5000/record/add", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({message:message,user:user.email,groupID:selectedGroup.selectedGroup}),
+  })
+  .catch(error => {
+    window.alert(error);
+    return;
+  });
+}
  
- // This method will map out the records on the table
  function recordList() {
    return records.map((record) => {
      return (
@@ -47,19 +62,19 @@ export default function RecordList(){
    });
  }
  
- 
-
- // This following section will display the table with the records of individuals.
- return (
+  return (
    <div style={{marginLeft:"10px",marginRight:"10px"}}>
      <h3>Record List</h3>
-       <div>{recordList()}</div>
+       {recordList()}
          <textarea 
-              style={{width:"100%"}}
+              style={{width:"100%",display:selectedGroup.selectedGroup==undefined?"none":"block"}}
+               value={message}
+               onChange={(e)=> setMessage(e.target.value)}
                onKeyPress={(ev) => {
                 if (ev.key === "Enter") {
                   ev.preventDefault();
-                  console.log(ev.target.value);
+                  onSubmit(ev)
+                  setMessage("")
                 }
               }}
          />

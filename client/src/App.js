@@ -5,14 +5,19 @@ import { Route, Routes } from "react-router-dom";
 import Navbar from "./components/navbar";
 import RecordList from "./components/recordList";
 import Create from "./components/create";
+import { Auth0Provider } from "@auth0/auth0-react";
 export const UserContext = createContext();
 
 const App = () => {
   const [selectedGroup,setSelectedGroup] = useState() 
   const values = {selectedGroup,setSelectedGroup}
  return (
+  <Auth0Provider
+  domain="dev-x8a3sk5w.us.auth0.com"
+  clientId="7maNTMMZ6eUZYES3FYJzrdRuQKFNTq5i"
+  redirectUri={window.location.origin}
+>
   <UserContext.Provider value={values}>
-
    <div>
      <Navbar/>
      <div style={{marginLeft:"20%"}}>
@@ -23,6 +28,7 @@ const App = () => {
      </div>
    </div>
    </UserContext.Provider>
+   </Auth0Provider>
  );
 };
  

@@ -9,11 +9,8 @@
     border-top: none;
     border-bottom: none;
     display: inline-block;
+    padding:10px
   }
-  
-.sidebarItem{
-    margin: 6%;
-}
 
 .sidebarItem> p:hover{
     background-color: rgb(206, 206, 206);

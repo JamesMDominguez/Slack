@@ -1,21 +1,19 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router";
 import "./style.css";
-// We import bootstrap to make our application look better.
 import "bootstrap/dist/css/bootstrap.css";
 import {UserContext} from "/Users/admin/Desktop/Slack/client/src/App.js"
+import LoginButton from "./login.js"
+import { useAuth0 } from "@auth0/auth0-react";
 
-// We import NavLink to utilize the react router.
-import { NavLink } from "react-router-dom";
-
-// Here, we display our Navbar
 export default function Navbar() {
   const navigate = useNavigate();
   const [showCreate, setShowCreate] = useState("none");
   const [userInput, setUserInput] = useState();
   const [groups, setGroups] = useState([]);
+  const { user,isAuthenticated } = useAuth0();
   const [selected, setSelected] = useState([]);
-  const user = useContext(UserContext);
+  const selectedGroup = useContext(UserContext);
 
   const users = [
     "itstatus@yahoo.ca",
@@ -58,7 +56,9 @@ export default function Navbar() {
 
   function showGroups(){
     return groups.map((group)=>{
-      return <p key={group.users} style={{wordWrap: "break-word"}} onClick={()=>user.setSelectedGroup(group._id)}>{group.users.toString()}</p>
+      if(isAuthenticated && group.users.includes(user.email)){
+        return <p key={group.users} style={{wordWrap: "break-word"}} onClick={()=>selectedGroup.setSelectedGroup(group._id)}>{group.users.toString()}</p>
+      }
     })
   }
 
@@ -78,10 +78,11 @@ export default function Navbar() {
     getRecords();
     return;
   }, [groups.length]);
+ 
   
   async function onSubmit(e) {
-    e.preventDefault();
-  
+    selected.push(user.email)
+    e.preventDefault();    
     await fetch("http://localhost:5000/group/add", {
       method: "POST",
       headers: {
@@ -95,17 +96,13 @@ export default function Navbar() {
     });
   
     setSelected([]);
-    navigate("/");
   }
+
 
   return (
     <div>
       <nav className="sidebar">
-        <img
-          style={{ width: 15 + "%", marginLeft: "20px", marginTop: "10px" }}
-          src="https://cdn.iconscout.com/icon/free/png-256/slack-logo-1889498-1597558.png"
-          onClick={() => navigate("/")}
-        />
+
 
         <div className="sidebarItem">
           <p onClick={() => setShowCreate("block")}>Messages +</p>
@@ -113,6 +110,8 @@ export default function Navbar() {
         <div>
           {showGroups()}
         </div>
+        <LoginButton/>
+
       </nav>
 
       <div
@@ -141,7 +140,9 @@ export default function Navbar() {
                 onChange={(e) => setUserInput(e.target.value)}
               />
             </div>
-            <button className="btn btn-primary" style={{marginBottom:"15px"}} onClick={(e)=>{onSubmit(e); setGroups(()=>[...groups,{users:selected}])}}>Create</button>
+            <button className="btn btn-primary" style={{marginBottom:"15px"}} onClick={(e)=>{
+              onSubmit(e); 
+              setGroups(()=>[...groups,{users:selected}])}}>Create</button>
           </div>
 
           <div style={{ backgroundColor: "white", borderRadius: "10px" }}>
